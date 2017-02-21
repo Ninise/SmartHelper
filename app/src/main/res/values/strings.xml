@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SmartHelper</string>
+    <string name="apps">Apps</string>
+    <string name="save">Save</string>
+    <string name="draws">Draws</string>
+    <string name="clear">Clear</string>
+</resources>
