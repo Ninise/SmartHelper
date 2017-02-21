@@ -16,4 +16,19 @@ public class UserCaptureModel {
     @Required
     private String pathToDraw;
 
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getPathToDraw() {
+        return pathToDraw;
+    }
+
+    public void setPathToDraw(String pathToDraw) {
+        this.pathToDraw = pathToDraw;
+    }
 }

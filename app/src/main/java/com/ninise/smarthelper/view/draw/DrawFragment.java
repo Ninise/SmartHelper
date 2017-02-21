@@ -1,7 +1,12 @@
 package com.ninise.smarthelper.view.draw;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +36,7 @@ public class DrawFragment extends BaseFragment {
     @BindView(R2.id.mainDrawingView) DrawingView mDrawingView;
     @BindView(R2.id.mainBottomBarView) BottomBarView mBottomBarView;
 
+    private static final int REQUEST_READ_STORAGE = 112;
     MainActivity.IDrawListener mListener = action -> {};
 
     public static DrawFragment newInstance(MainActivity.IDrawListener listener) {
@@ -58,16 +64,6 @@ public class DrawFragment extends BaseFragment {
         return view;
     }
 
-    private void tuneBottomBar(BottomBarView bottomBarView) {
-        bottomBarView.setFirstText(R.string.apps);
-        bottomBarView.setSecondText(R.string.save);
-        bottomBarView.setThirdText(R.string.draws);
-
-        bottomBarView.setOnFirstClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_APPS));
-        bottomBarView.setSecondClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_SAVE));
-        bottomBarView.setThirdChangeListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_DRAWS));
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -80,5 +76,15 @@ public class DrawFragment extends BaseFragment {
             case R.id.menuClear: mDrawingView.clear();
             default: return true;
         }
+    }
+
+    private void tuneBottomBar(BottomBarView bottomBarView) {
+        bottomBarView.setFirstText(R.string.apps);
+        bottomBarView.setSecondText(R.string.save);
+        bottomBarView.setThirdText(R.string.draws);
+
+        bottomBarView.setOnFirstClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_APPS));
+        bottomBarView.setSecondClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_SAVE));
+        bottomBarView.setThirdChangeListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_DRAWS));
     }
 }
