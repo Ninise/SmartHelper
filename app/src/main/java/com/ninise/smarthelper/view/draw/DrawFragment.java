@@ -3,6 +3,7 @@ package com.ninise.smarthelper.view.draw;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -38,6 +39,7 @@ public class DrawFragment extends BaseFragment {
 
     private static final int REQUEST_READ_STORAGE = 112;
     MainActivity.IDrawListener mListener = action -> {};
+    private Object mImage;
 
     public static DrawFragment newInstance(MainActivity.IDrawListener listener) {
         DrawFragment fragment = new DrawFragment();
@@ -86,5 +88,9 @@ public class DrawFragment extends BaseFragment {
         bottomBarView.setOnFirstClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_APPS));
         bottomBarView.setSecondClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_SAVE));
         bottomBarView.setThirdChangeListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_DRAWS));
+    }
+
+    public Bitmap getImage() {
+        return mDrawingView.getImage();
     }
 }

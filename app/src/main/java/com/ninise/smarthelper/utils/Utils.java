@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Environment;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
@@ -17,7 +19,9 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ninise.smarthelper.R;
+import com.ninise.smarthelper.model.BitmapMatrix;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -120,10 +124,35 @@ public class Utils {
         return path;
     }
 
-    public static String generateRandomString(int len){
+    public static String generateRandomString(int len) {
         StringBuilder sb = new StringBuilder(len);
-        for( int i = 0; i < len; i++ )
-            sb.append( lowercaseChars.charAt( random.nextInt(lowercaseChars.length()) ) );
+        for (int i = 0; i < len; i++)
+            sb.append(lowercaseChars.charAt(random.nextInt(lowercaseChars.length())));
         return sb.toString();
     }
+
+    public static BitmapMatrix arrayFromBitmap(Bitmap source){
+
+        source = Bitmap.createScaledBitmap(source, (int)(source.getWidth() / 4), (int)(source.getHeight() / 4), true);
+
+
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int[][] result = new int[height][width];
+        int[] pixels = new int[width*height];
+        source.getPixels(pixels, 0, width, 0, 0, width, height);
+        int pixelsIndex = 0;
+        System.out.println("arrayFromBitmap START " + " - height: " + height + "; width: " + width);
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int pixel = pixels[pixelsIndex] != 0 ? 1 : 0;
+                result[i][j] = pixel;
+                pixelsIndex++;
+            }
+        }
+
+        return new BitmapMatrix(result, width, height);
+    }
+
 }

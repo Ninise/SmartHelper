@@ -25,11 +25,8 @@ public class BottomBarView extends RelativeLayout {
     private ImageView mThirdImageView;
     private TextView mThirdTextView;
 
-    private final OnClickListener DEFAULT_CLICK_LISTENER = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
+    private final OnClickListener DEFAULT_CLICK_LISTENER = view -> {
 
-        }
     };
 
     private OnClickListener mFirstClickListener = DEFAULT_CLICK_LISTENER;

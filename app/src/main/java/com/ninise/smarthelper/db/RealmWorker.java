@@ -35,9 +35,9 @@ public class RealmWorker<T extends DefaultRealmObject> implements RealmAccessor<
     }
 
     public void deinit() {
-        mRealm.close();
-        mRealm = null;
-        mClass = null;
+        if (mRealm != null && !mRealm.isClosed()) {
+            mRealm.close();
+        }
     }
 
     @Override
