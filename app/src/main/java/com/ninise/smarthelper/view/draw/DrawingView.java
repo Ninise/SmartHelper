@@ -36,6 +36,12 @@ public class DrawingView extends View {
     private int BACK_COLOR = DEFAULT_BACK_COLOR;
     private int PAINT_COLOR = DEFAULT_PAINT_COLOR;
 
+    private IDragListener mListener = () -> {};
+
+    public interface IDragListener {
+        void onDragEnd();
+    }
+
     public DrawingView(Context context) {
         super(context);
         init();
@@ -59,6 +65,10 @@ public class DrawingView extends View {
         mPaint.setColor(getContext().getResources().getColor(PAINT_COLOR));
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(STROKE_WIDTH);
+    }
+
+    public void setDragListener(IDragListener listener) {
+        this.mListener = listener;
     }
 
     public void setPaintColor(int color) {
@@ -126,6 +136,7 @@ public class DrawingView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 touchDown(x, y);
+                mListener.onDragEnd();
                 break;
             case MotionEvent.ACTION_MOVE:
                 touchMove(x, y);

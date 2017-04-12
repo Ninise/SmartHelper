@@ -37,9 +37,11 @@ public class DrawFragment extends BaseFragment {
     @BindView(R2.id.mainDrawingView) DrawingView mDrawingView;
     @BindView(R2.id.mainBottomBarView) BottomBarView mBottomBarView;
 
-    private static final int REQUEST_READ_STORAGE = 112;
     MainActivity.IDrawListener mListener = action -> {};
-    private Object mImage;
+
+    DrawingView.IDragListener mDragListener = () -> {
+        mListener.onActionListener(MainActivity.IDrawListener.DRAG_FINISH);
+    };
 
     public static DrawFragment newInstance(MainActivity.IDrawListener listener) {
         DrawFragment fragment = new DrawFragment();
@@ -62,6 +64,8 @@ public class DrawFragment extends BaseFragment {
 
         tuneToolbar(mToolbar, 0, R.string.app_name, null);
         tuneBottomBar(mBottomBarView);
+
+        mDrawingView.setDragListener(mDragListener);
 
         return view;
     }
