@@ -11,10 +11,10 @@ import android.util.Log;
 import com.ninise.smarthelper.R;
 import com.ninise.smarthelper.base.BaseActivity;
 import com.ninise.smarthelper.core.ImageProccesorFactory;
+import com.ninise.smarthelper.core.MatrixUtils;
 import com.ninise.smarthelper.core.Processor;
 import com.ninise.smarthelper.core.XORRunner;
 import com.ninise.smarthelper.model.BitmapMatrix;
-import com.ninise.smarthelper.core.MatrixUtils;
 import com.ninise.smarthelper.utils.Utils;
 import com.ninise.smarthelper.view.apps.AppsFragment;
 import com.ninise.smarthelper.view.draw.DrawFragment;
@@ -78,13 +78,13 @@ public class MainActivity extends BaseActivity {
                 System.out.println("\nCOMPRESS\n");
 
                 Processor processor = ImageProccesorFactory.getFactory(ImageProccesorFactory.NEIGHBOR);
-                int[] comVector = processor.process(vector, width, height, 24, 24);
 
-                int[][] newSub = Utils.getInstance().convert1Dto2D(comVector, 24);
+
+                int[][] newSub = processor.process(sub, width, height, 63, 63);
 
                 for (int i = 0; i < newSub.length; i++) {
                     for (int j = 0; j < newSub[i].length; j++) {
-                        System.out.print(" " + newSub[i][j]);
+                        System.out.print((newSub[i][j] == 1 ? "*" : " "));
                         width = j;
                     }
                     System.out.println();

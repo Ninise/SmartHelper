@@ -131,14 +131,14 @@ public class Utils {
         return sb.toString();
     }
 
-    public static BitmapMatrix arrayFromBitmap(Bitmap source){
+    public static BitmapMatrix arrayFromBitmap(Bitmap source) {
 
 //        source = Bitmap.createScaledBitmap(source, source.getWidth() / 4, source.getHeight() / 4, true);
 
         int width = source.getWidth();
         int height = source.getHeight();
         int[][] result = new int[height][width];
-        int[] pixels = new int[width*height];
+        int[] pixels = new int[width * height];
         source.getPixels(pixels, 0, width, 0, 0, width, height);
         int pixelsIndex = 0;
         System.out.println("arrayFromBitmap START " + " - height: " + height + "; width: " + width);
@@ -167,15 +167,15 @@ public class Utils {
     }
 
     public static double r(int c) {
-        return R(c)/255.0;
+        return R(c) / 255.0;
     }
 
     public static double g(int c) {
-        return G(c)/255.0;
+        return G(c) / 255.0;
     }
 
     public static double b(int c) {
-        return B(c)/255.0;
+        return B(c) / 255.0;
     }
 
     public int[] convert2DtoVector(int[][] arr) {
@@ -195,12 +195,17 @@ public class Utils {
     }
 
     public int[][] convert1Dto2D(int[] array, int length) {
-        if (array.length != (length*length))
+        if (array.length != (length * length))
             throw new IllegalArgumentException("Invalid array length");
 
         int[][] bidi = new int[length][length];
-        for ( int i = 0; i < length; i++ )
-            System.arraycopy(array, (i*length), bidi[i], 0, length);
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < length; j++) {
+                bidi[j][i] = array[i * length + j];
+                System.out.print((array[i * length + j] == 1 ? "*" : " "));
+            }
+            System.out.println();
+        }
 
         return bidi;
     }

@@ -19,7 +19,7 @@
         android:layout_alignParentBottom="true"
         />
 
-    <com.ninise.smarthelper.view.draw.DrawingView
+    <FrameLayout
         android:id="@+id/mainDrawingView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.ninise.smarthelper.R;
 import com.ninise.smarthelper.R2;
@@ -34,10 +35,12 @@ public class DrawFragment extends BaseFragment {
     private final String TAG = DrawFragment.class.getSimpleName();
 
     @BindView(R2.id.mainToolbar) Toolbar mToolbar;
-    @BindView(R2.id.mainDrawingView) DrawingView mDrawingView;
+    @BindView(R2.id.mainDrawingView) FrameLayout frameLayout;
     @BindView(R2.id.mainBottomBarView) BottomBarView mBottomBarView;
 
     MainActivity.IDrawListener mListener = action -> {};
+
+    private DrawingView mDrawingView;
 
     DrawingView.IDragListener mDragListener = () -> {
         mListener.onActionListener(MainActivity.IDrawListener.DRAG_FINISH);
@@ -65,7 +68,7 @@ public class DrawFragment extends BaseFragment {
         tuneToolbar(mToolbar, 0, R.string.app_name, null);
         tuneBottomBar(mBottomBarView);
 
-        mDrawingView.setDragListener(mDragListener);
+        addView();
 
         return view;
     }
@@ -79,9 +82,20 @@ public class DrawFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menuClear: mDrawingView.clear();
+            case R.id.menuClear: addView();
             default: return true;
         }
+    }
+
+    private void addView() {
+        if (mDrawingView != null) {
+            frameLayout.removeView(mDrawingView);
+            mDrawingView = null;
+        }
+
+        mDrawingView = new DrawingView(getContext());
+        mDrawingView.setDragListener(mDragListener);
+        frameLayout.addView(mDrawingView);
     }
 
     private void tuneBottomBar(BottomBarView bottomBarView) {
