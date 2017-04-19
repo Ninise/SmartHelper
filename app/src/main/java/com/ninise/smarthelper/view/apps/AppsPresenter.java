@@ -2,7 +2,7 @@ package com.ninise.smarthelper.view.apps;
 
 import android.content.pm.ResolveInfo;
 
-import com.ninise.smarthelper.adapters.apps.AppsRecyclerAdapter;
+import com.ninise.smarthelper.adapters.GenericRecyclerAdapter;
 import com.ninise.smarthelper.utils.IRecyclerItemClickListener;
 import com.ninise.smarthelper.utils.Utils;
 
@@ -20,7 +20,7 @@ public class AppsPresenter implements IAppsPresenter {
 
     @Override
     public void onCreateAdapter(IRecyclerItemClickListener<ResolveInfo> listener) {
-        mView.onSetRecyclerAdapter(new AppsRecyclerAdapter(Utils.getInstance().getApps(), listener));
+        mView.onSetRecyclerAdapter(new GenericRecyclerAdapter<>(Utils.getInstance().getApps(), listener, GenericRecyclerAdapter.APPS));
     }
 
 }

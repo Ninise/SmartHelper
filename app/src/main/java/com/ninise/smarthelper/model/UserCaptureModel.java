@@ -1,20 +1,25 @@
 package com.ninise.smarthelper.model;
 
+import java.util.Arrays;
+
+import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 import io.realm.annotations.Required;
 
 /**
  * @author Nikitin Nikita
  */
 
-public class UserCaptureModel {
+@RealmClass
+public class UserCaptureModel extends RealmObject {
 
     @PrimaryKey
     @Required
     private String appName;
 
     @Required
-    private String pathToDraw;
+    private byte[] imgVector;
 
     public String getAppName() {
         return appName;
@@ -24,11 +29,20 @@ public class UserCaptureModel {
         this.appName = appName;
     }
 
-    public String getPathToDraw() {
-        return pathToDraw;
+    public byte[] getImgVector() {
+        return imgVector;
     }
 
-    public void setPathToDraw(String pathToDraw) {
-        this.pathToDraw = pathToDraw;
+    public void setImgVector(byte[] imgVector) {
+        this.imgVector = imgVector;
+    }
+
+
+    @Override
+    public String toString() {
+        return "UserCaptureModel{" +
+                "appName='" + appName + '\'' +
+                ", imgVector=" + Arrays.toString(imgVector) +
+                '}';
     }
 }

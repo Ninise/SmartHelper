@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
@@ -18,13 +17,10 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ninise.smarthelper.R;
-import com.ninise.smarthelper.core.BicubicFilter;
-import com.ninise.smarthelper.model.BitmapMatrix;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -131,28 +127,7 @@ public class Utils {
         return sb.toString();
     }
 
-    public static BitmapMatrix arrayFromBitmap(Bitmap source) {
 
-//        source = Bitmap.createScaledBitmap(source, source.getWidth() / 4, source.getHeight() / 4, true);
-
-        int width = source.getWidth();
-        int height = source.getHeight();
-        int[][] result = new int[height][width];
-        int[] pixels = new int[width * height];
-        source.getPixels(pixels, 0, width, 0, 0, width, height);
-        int pixelsIndex = 0;
-        System.out.println("arrayFromBitmap START " + " - height: " + height + "; width: " + width);
-
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int pixel = pixels[pixelsIndex] != 0 ? 1 : 0;
-                result[i][j] = pixel;
-                pixelsIndex++;
-            }
-        }
-
-        return new BitmapMatrix(result, width, height);
-    }
 
     public static int R(int c) {
         return (c >> 16) & 0xff;
@@ -178,36 +153,13 @@ public class Utils {
         return B(c) / 255.0;
     }
 
-    public int[] convert2DtoVector(int[][] arr) {
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < arr[i].length; j++) {
-                list.add(arr[i][j]);
-            }
-        }
 
-        int[] vector = new int[list.size()];
-        for (int i = 0; i < vector.length; i++) {
-            vector[i] = list.get(i);
-        }
-
-        return vector;
-    }
-
-    public int[][] convert1Dto2D(int[] array, int length) {
-        if (array.length != (length * length))
-            throw new IllegalArgumentException("Invalid array length");
-
-        int[][] bidi = new int[length][length];
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < length; j++) {
-                bidi[j][i] = array[i * length + j];
-                System.out.print((array[i * length + j] == 1 ? "*" : " "));
+    public void printMatrix(int[][] matrix) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[j][i] == 1 ? "*" : " ");
             }
             System.out.println();
         }
-
-        return bidi;
     }
-
 }

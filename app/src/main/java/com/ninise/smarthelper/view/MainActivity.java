@@ -10,19 +10,29 @@ import android.util.Log;
 
 import com.ninise.smarthelper.R;
 import com.ninise.smarthelper.base.BaseActivity;
+import com.ninise.smarthelper.core.CoreProcessor;
 import com.ninise.smarthelper.core.ImageProccesorFactory;
 import com.ninise.smarthelper.core.MatrixUtils;
 import com.ninise.smarthelper.core.Processor;
 import com.ninise.smarthelper.core.XORRunner;
+import com.ninise.smarthelper.db.RealmWorker;
 import com.ninise.smarthelper.model.BitmapMatrix;
+import com.ninise.smarthelper.model.UserCaptureModel;
 import com.ninise.smarthelper.utils.Utils;
 import com.ninise.smarthelper.view.apps.AppsFragment;
 import com.ninise.smarthelper.view.draw.DrawFragment;
+import com.ninise.smarthelper.view.draws.DrawsFragment;
+
+import java.io.IOException;
+import java.util.List;
+
+import io.realm.Realm;
 
 import static com.ninise.smarthelper.view.MainActivity.IDrawListener.DRAG_FINISH;
 import static com.ninise.smarthelper.view.MainActivity.IDrawListener.DRAW_APPS;
 import static com.ninise.smarthelper.view.MainActivity.IDrawListener.DRAW_DRAWS;
 import static com.ninise.smarthelper.view.MainActivity.IDrawListener.DRAW_SAVE;
+import static com.ninise.smarthelper.view.MainActivity.IDrawListener.DRAW_UP;
 
 /**
  * @author Nikitin Nikita
@@ -37,115 +47,123 @@ public class MainActivity extends BaseActivity {
         int DRAW_SAVE = 2;
         int DRAW_DRAWS = 3;
         int DRAG_FINISH = 4;
+        int DRAW_UP = 5;
 
         void onActionListener(int action);
     }
 
-    DrawFragment drawFragment;
+    private DrawFragment drawFragment;
+    private byte[] imgBytes;
+
+    private AppsFragment.IAppsListener appsListener = (info -> {
+        UserCaptureModel captureModel = new UserCaptureModel();
+        captureModel.setAppName(Utils.getInstance().parseResolveInfoLabel(info));
+        captureModel.setImgVector(imgBytes);
+
+        if (imgBytes != null) {
+            RealmWorker.getInstance().createItem(captureModel);
+        }
+    });
 
     private IDrawListener mDrawListener = action -> {
         switch (action) {
             case DRAW_APPS:
-                switchFragment(AppsFragment.newInstance());
+                switchFragment(AppsFragment.newInstance(appsListener));
                 break;
             case DRAW_SAVE:
-                BitmapMatrix bitmapMatrix = Utils.arrayFromBitmap(drawFragment.getImage());
-                int[][] matrix = bitmapMatrix.getMatrix();
+                CoreProcessor processor = new CoreProcessor()
+                        .addBitmap(drawFragment.getImage());
 
-                Pair<int[], int[]> pair = MatrixUtils.getInstance().getArr(matrix, bitmapMatrix.getWidth(), bitmapMatrix.getHeight());
-                int[] xArr = pair.first;
-                int[] yArr = pair.second;
-
-                int[][] sub = MatrixUtils.getInstance().getSubMatrix(matrix, xArr, yArr);
-
-                Log.d("das", "SUB MATRIX");
-                System.out.println("SUB MATRIX\n");
-
-                int width = 0;
-                int height = 0;
-
-                for (int i = 0; i < sub.length; i++) {
-                    for (int j = 0; j < sub[i].length; j++) {
-                        System.out.print(" " + sub[i][j]);
-                        width = j;
-                    }
-                    System.out.println();
-                    height = i;
-                }
-
-                int[] vector = Utils.getInstance().convert2DtoVector(sub);
-
-                System.out.println("\nCOMPRESS\n");
-
-                Processor processor = ImageProccesorFactory.getFactory(ImageProccesorFactory.NEIGHBOR);
-
-
-                int[][] newSub = processor.process(sub, width, height, 63, 63);
-
-                for (int i = 0; i < newSub.length; i++) {
-                    for (int j = 0; j < newSub[i].length; j++) {
-                        System.out.print((newSub[i][j] == 1 ? "*" : " "));
-                        width = j;
-                    }
-                    System.out.println();
-                    height = i;
-                }
-
-                System.out.println();
-                for (int i = 0; i < sub.length; i++) {
-                    System.out.print(" " + i);
+                try {
+                    processor.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    System.out.println("BEFORE SAVE");
+                    imgBytes = processor.getCompressedSubByteVector();
+                    switchFragment(AppsFragment.newInstance(appsListener));
                 }
 
                 break;
             case DRAW_DRAWS:
+                switchFragment(DrawsFragment.newInstance());
                 break;
 
-            case DRAG_FINISH:
+            case DRAW_UP:
+                CoreProcessor proc = new CoreProcessor()
+                        .addBitmap(drawFragment.getImage());
+                int[] compressedMatrix;
+                try {
+                    proc.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    System.out.println("BEFORE SAVE");
+
+                    List<UserCaptureModel> list = RealmWorker.getInstance().<UserCaptureModel>readAllItems();
+
+                    compressedMatrix = proc.getCompressedSubVector();
+                    if (list.isEmpty()) return;
+                    for (UserCaptureModel captureModel : list) {
+
+                        try {
+                            int[] matrix = proc.toIntArray(captureModel.getImgVector());
+                            System.out.println("SAVED");
+                            Utils.getInstance().printMatrix(proc.convert1Dto2D(matrix, proc.getCompressValue()));
+                            System.out.println("DRAWED");
+                            Utils.getInstance().printMatrix(proc.convert1Dto2D(compressedMatrix, proc.getCompressValue()));
+                            int ma = XORRunner
+                                    .vector()
+                                    .setOriginalPixels(compressedMatrix)
+                                    .setSamplePixels(matrix)
+                                    .getMatchAccuracy();
+
+                            Log.d("das", "ma = " + ma + " - for " + captureModel.getAppName());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
 
                 break;
+
+            case DRAG_FINISH: break;
         }
     };
+
+
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        RealmWorker.getInstance().init(Realm.getDefaultInstance(), UserCaptureModel.class);
+
+
         drawFragment = DrawFragment.newInstance(mDrawListener);
         switchFragment(drawFragment);
         Utils.getInstance().checkPermissions(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
 
-
-
-        int[][] a = {   {0,0,0,0,0},
-                        {0,1,0,1,0},
-                        {0,1,1,1,0},
-                        {0,1,0,1,0},
-                        {0,0,0,0,0}
-        };
-
-        int[][] b = {   {1,0,0,0,1},
-                        {0,1,0,1,0},
-                        {0,1,1,1,0},
-                        {0,1,0,1,0},
-                        {1,1,1,1,1}
-        };
-
-
-        int ma = XORRunner
-                .build()
-                .setOriginalPixels(a)
-                .setSamplePixels(b)
-                .getMatchAccuracy();
-
-        Log.d("das", "ma = " + ma + "%");
-
-
+    @Override
+    protected void onDestroy() {
+        RealmWorker.getInstance().deinit();
+        super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        ifFragType(AppsFragment.class, f -> switchFragment(DrawFragment.newInstance(mDrawListener)), super::onBackPressed);
+        ifFragType(AppsFragment.class, f -> {
+            drawFragment = DrawFragment.newInstance(mDrawListener);
+            switchFragment(drawFragment);
+        });
+        ifFragType(DrawsFragment.class, f -> {
+            drawFragment = DrawFragment.newInstance(mDrawListener);
+            switchFragment(drawFragment);
+        });
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.ninise.smarthelper.adapters.apps;
+package com.ninise.smarthelper.adapters;
 
 import android.content.pm.ResolveInfo;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ninise.smarthelper.R2;
+import com.ninise.smarthelper.adapters.BaseViewHolder;
 import com.ninise.smarthelper.utils.IRecyclerItemClickListener;
 import com.ninise.smarthelper.utils.Utils;
 
@@ -17,7 +18,7 @@ import butterknife.ButterKnife;
  * @author Nikitin Nikita
  */
 
-public class AppsRecyclerViewHolder extends RecyclerView.ViewHolder {
+public class AppsRecyclerViewHolder extends BaseViewHolder<ResolveInfo> {
 
     @BindView(R2.id.appsItemView) View mView;
     @BindView(R2.id.appsItemImageView) ImageView mImageView;

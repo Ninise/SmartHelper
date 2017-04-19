@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.ninise.smarthelper.R;
+import com.ninise.smarthelper.db.RealmWorker;
+
+import io.realm.Realm;
 
 /**
  * @author Nikitin Nikita
@@ -27,7 +30,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         void process();
     }
 
-    public <E extends Fragment> void ifFragType(Class<E> clazz, DoIfFragment<E> thenCallback, DoIfNoFragment elseCallback){
+    public <E extends Fragment> void ifFragType(Class<E> clazz, DoIfFragment<E> thenCallback, DoIfNoFragment elseCallback) {
         runOnUiThread(()-> {
             Fragment f = getSupportFragmentManager().findFragmentById(R.id.container);
             if(f == null)
@@ -40,6 +43,19 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if(elseCallback != null){
                     elseCallback.process();
                 }
+            }
+        });
+    }
+
+    public <E extends Fragment> void ifFragType(Class<E> clazz, DoIfFragment<E> thenCallback) {
+        runOnUiThread(()-> {
+            Fragment f = getSupportFragmentManager().findFragmentById(R.id.container);
+            if(f == null)
+                return;
+            if (clazz.isAssignableFrom(f.getClass())) {
+                E fragment = (E) f;
+                if(thenCallback != null)
+                    thenCallback.process(fragment);
             }
         });
     }

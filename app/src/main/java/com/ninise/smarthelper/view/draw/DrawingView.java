@@ -28,7 +28,7 @@ public class DrawingView extends View {
     private boolean isDragged = false;
 
     private static final int TOUCH_TOLERANCE = 4;
-    private static final int STROKE_WIDTH = 4;
+    private static final int STROKE_WIDTH = 20;
 
     private final int DEFAULT_BACK_COLOR = android.R.color.background_light;
     private final int DEFAULT_PAINT_COLOR = android.R.color.background_dark;

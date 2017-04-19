@@ -1,6 +1,6 @@
 package com.ninise.smarthelper.view.apps;
 
-import com.ninise.smarthelper.adapters.apps.AppsRecyclerAdapter;
+import com.ninise.smarthelper.adapters.GenericRecyclerAdapter;
 
 /**
  * @author Nikita <nikita.nikitin@computoolsglobal.com>
@@ -8,6 +8,6 @@ import com.ninise.smarthelper.adapters.apps.AppsRecyclerAdapter;
 
 public interface IAppsView {
 
-    void onSetRecyclerAdapter(AppsRecyclerAdapter adapter);
+    void onSetRecyclerAdapter(GenericRecyclerAdapter adapter);
 
 }

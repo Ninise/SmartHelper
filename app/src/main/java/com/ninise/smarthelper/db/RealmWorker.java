@@ -5,19 +5,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
 import io.realm.RealmQuery;
 
 /**
  * @author Nikitin Nikita
  */
 
-public class RealmWorker<T extends DefaultRealmObject> implements RealmAccessor<T> {
+public class RealmWorker<T extends RealmObject> implements RealmAccessor<T> {
 
     private static RealmWorker mInstance = null;
 
     private Realm mRealm;
     private Class<T> mClass;
-    private final String QUERY_KEY = "QUERY_KEY";
+    private final String QUERY_KEY = "appName";
 
     private RealmWorker() {}
 
@@ -68,7 +69,7 @@ public class RealmWorker<T extends DefaultRealmObject> implements RealmAccessor<
     @Override
     public void deleteItem(T item) {
         mRealm.beginTransaction();
-        query(item.getKey()).findAll().deleteAllFromRealm();
+        query(QUERY_KEY).findAll().deleteAllFromRealm();
         mRealm.commitTransaction();
     }
 

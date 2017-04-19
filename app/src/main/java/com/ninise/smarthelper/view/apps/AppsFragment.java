@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.ninise.smarthelper.R;
 import com.ninise.smarthelper.R2;
-import com.ninise.smarthelper.adapters.apps.AppsRecyclerAdapter;
+import com.ninise.smarthelper.adapters.GenericRecyclerAdapter;
 import com.ninise.smarthelper.base.BaseFragment;
 import com.ninise.smarthelper.utils.IRecyclerItemClickListener;
 
@@ -29,16 +29,24 @@ public class AppsFragment extends BaseFragment implements IAppsView {
     @BindView(R2.id.appsToolbar) Toolbar mToolbar;
     @BindView(R2.id.appsRecyclerView) RecyclerView mRecyclerView;
 
+    private IAppsListener appsListener = (info -> {});
+
     private IAppsPresenter mPresenter;
     private IRecyclerItemClickListener<ResolveInfo> mListener = ((model, pos) -> {
-
+        appsListener.onAppSelected(model);
+        getActivity().onBackPressed();
     });
 
-    public static AppsFragment newInstance() {
-        AppsFragment fragment = new AppsFragment();
+    public interface IAppsListener {
+        void onAppSelected(ResolveInfo info);
+    }
 
+    public static AppsFragment newInstance(IAppsListener listener) {
+        AppsFragment fragment = new AppsFragment();
+        fragment.appsListener = listener;
         return fragment;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +71,7 @@ public class AppsFragment extends BaseFragment implements IAppsView {
     }
 
     @Override
-    public void onSetRecyclerAdapter(AppsRecyclerAdapter adapter) {
+    public void onSetRecyclerAdapter(GenericRecyclerAdapter adapter) {
         mRecyclerView.setAdapter(adapter);
     }
 }

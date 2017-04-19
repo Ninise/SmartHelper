@@ -1,13 +1,9 @@
 package com.ninise.smarthelper.view.draw;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +22,10 @@ import com.ninise.smarthelper.view.MainActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
+import static android.view.MotionEvent.ACTION_UP;
+
 /**
  * @author Nikitin Nikita
  */
@@ -41,6 +41,10 @@ public class DrawFragment extends BaseFragment {
     MainActivity.IDrawListener mListener = action -> {};
 
     private DrawingView mDrawingView;
+
+    private Runnable runnable = () -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_UP);
+    private Handler handler = new Handler();
+
 
     DrawingView.IDragListener mDragListener = () -> {
         mListener.onActionListener(MainActivity.IDrawListener.DRAG_FINISH);
@@ -96,6 +100,23 @@ public class DrawFragment extends BaseFragment {
         mDrawingView = new DrawingView(getContext());
         mDrawingView.setDragListener(mDragListener);
         frameLayout.addView(mDrawingView);
+
+        mDrawingView.setOnTouchListener((v, event) -> {
+
+            switch (event.getAction()) {
+                case ACTION_UP :
+                    handler.postDelayed(runnable, 500);
+                    break;
+                case ACTION_DOWN :
+                    handler.removeCallbacks(runnable);
+                    break;
+
+                case ACTION_MOVE :
+                    break;
+            }
+
+            return false;
+        });
     }
 
     private void tuneBottomBar(BottomBarView bottomBarView) {
