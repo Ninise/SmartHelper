@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.support.v4.util.Pair;
 
 import com.ninise.smarthelper.model.BitmapMatrix;
+import com.ninise.smarthelper.utils.Utils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -24,7 +25,8 @@ public class CoreProcessor implements IUtils {
     private int[][] compressedSubMatrix;
     private byte[] compressedSubByteVector;
     private int[] compressedSubVector;
-    private int compressValue = 64;
+    private int compressValue = 24;
+    private String pathToFile;
 
     public CoreProcessor addCompressValue(int value) {
         compressValue = value;
@@ -41,6 +43,11 @@ public class CoreProcessor implements IUtils {
 
         // GET FROM VIEW BITMAP AND CONVERT TO INT[][]
         BitmapMatrix bitmapMatrix = arrayFromBitmap(originalBitmap);
+        try {
+           pathToFile = Utils.getInstance().saveBitmapToFile(originalBitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         matrix = bitmapMatrix.getMatrix();
 
         // GET TWO VECTORS X and Y - SUMS OF MATRIX PIXELS
@@ -63,7 +70,7 @@ public class CoreProcessor implements IUtils {
         }
 
         // SHRINK SUB-MATRIX BY ALGORITHM FROM FACTORY
-        Processor processor = ImageProccesorFactory.getFactory(ImageProccesorFactory.BILINEAR);
+        Processor processor = ImageProcessorFactory.getFactory(ImageProcessorFactory.BILINEAR);
         compressedSubVector = processor.process(convert2DtoVector(submatrix), width, height, compressValue, compressValue);
 
         //   FIRST       SECOND
@@ -100,7 +107,7 @@ public class CoreProcessor implements IUtils {
         int[] pixels = new int[width * height];
         source.getPixels(pixels, 0, width, 0, 0, width, height);
         int pixelsIndex = 0;
-        System.out.println("arrayFromBitmap START " + " - height: " + height + "; width: " + width);
+
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 int pixel = pixels[pixelsIndex] != 0 ? 1 : 0;
@@ -197,5 +204,9 @@ public class CoreProcessor implements IUtils {
 
     public int[] getCompressedSubVector() {
         return compressedSubVector;
+    }
+
+    public String getPathToFile() {
+        return pathToFile;
     }
 }

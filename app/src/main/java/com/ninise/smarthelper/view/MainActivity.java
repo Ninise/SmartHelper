@@ -1,22 +1,18 @@
 package com.ninise.smarthelper.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.util.Log;
 
 import com.ninise.smarthelper.R;
 import com.ninise.smarthelper.base.BaseActivity;
 import com.ninise.smarthelper.core.CoreProcessor;
-import com.ninise.smarthelper.core.ImageProccesorFactory;
-import com.ninise.smarthelper.core.MatrixUtils;
-import com.ninise.smarthelper.core.Processor;
 import com.ninise.smarthelper.core.XORRunner;
 import com.ninise.smarthelper.db.RealmWorker;
-import com.ninise.smarthelper.model.BitmapMatrix;
 import com.ninise.smarthelper.model.UserCaptureModel;
 import com.ninise.smarthelper.utils.Utils;
 import com.ninise.smarthelper.view.apps.AppsFragment;
@@ -24,6 +20,7 @@ import com.ninise.smarthelper.view.draw.DrawFragment;
 import com.ninise.smarthelper.view.draws.DrawsFragment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -54,11 +51,14 @@ public class MainActivity extends BaseActivity {
 
     private DrawFragment drawFragment;
     private byte[] imgBytes;
+    private String pathToFile;
 
     private AppsFragment.IAppsListener appsListener = (info -> {
         UserCaptureModel captureModel = new UserCaptureModel();
         captureModel.setAppName(Utils.getInstance().parseResolveInfoLabel(info));
         captureModel.setImgVector(imgBytes);
+        captureModel.setPathToFile(pathToFile);
+        captureModel.setPackag(info.activityInfo.packageName);
 
         if (imgBytes != null) {
             RealmWorker.getInstance().createItem(captureModel);
@@ -81,6 +81,7 @@ public class MainActivity extends BaseActivity {
                 } finally {
                     System.out.println("BEFORE SAVE");
                     imgBytes = processor.getCompressedSubByteVector();
+                    pathToFile = processor.getPathToFile();
                     switchFragment(AppsFragment.newInstance(appsListener));
                 }
 
@@ -101,9 +102,11 @@ public class MainActivity extends BaseActivity {
                     System.out.println("BEFORE SAVE");
 
                     List<UserCaptureModel> list = RealmWorker.getInstance().<UserCaptureModel>readAllItems();
+                    if (list.isEmpty()) return;
+
+                    List<OpenApp> apps = new ArrayList<>();
 
                     compressedMatrix = proc.getCompressedSubVector();
-                    if (list.isEmpty()) return;
                     for (UserCaptureModel captureModel : list) {
 
                         try {
@@ -118,10 +121,21 @@ public class MainActivity extends BaseActivity {
                                     .setSamplePixels(matrix)
                                     .getMatchAccuracy();
 
+
+                            apps.add(new OpenApp(ma, captureModel.getPackag()));
                             Log.d("das", "ma = " + ma + " - for " + captureModel.getAppName());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    }
+
+                    String bestMAPkg = bestMA(apps);
+
+                    Log.d("das", "start package: " + bestMAPkg);
+
+                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage(bestMAPkg);
+                    if (launchIntent != null) {
+                        startActivity(launchIntent);//null pointer check in case package name was not found
                     }
 
                 }
@@ -132,7 +146,34 @@ public class MainActivity extends BaseActivity {
         }
     };
 
+    class OpenApp {
+        int ma;
+        String packag;
 
+        public OpenApp(int ma, String packag) {
+            this.ma = ma;
+            this.packag = packag;
+        }
+
+        public String getPackag() {
+            return packag;
+        }
+    }
+
+    private String bestMA(List<OpenApp> list) {
+        String pk = null;
+
+        int best = 0;
+
+        for (OpenApp app : list) {
+            if (app.ma > best) {
+                best = app.ma;
+                pk = app.getPackag();
+            }
+        }
+
+        return pk;
+    }
 
 
     @Override
@@ -143,9 +184,22 @@ public class MainActivity extends BaseActivity {
         RealmWorker.getInstance().init(Realm.getDefaultInstance(), UserCaptureModel.class);
 
 
+        List<UserCaptureModel> list = RealmWorker.getInstance().<UserCaptureModel>readAllItems();
+
         drawFragment = DrawFragment.newInstance(mDrawListener);
         switchFragment(drawFragment);
         Utils.getInstance().checkPermissions(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+    }
+
+    public static ArrayList<Integer> bytesToListOfIntegers(byte[] bytes) {
+        ArrayList<Integer> longs = new ArrayList<Integer>();
+        longs.ensureCapacity(bytes.length);
+
+        for (byte b: bytes) {
+            longs.add((int) b);
+        }
+
+        return longs;
     }
 
     @Override
@@ -165,6 +219,9 @@ public class MainActivity extends BaseActivity {
             switchFragment(drawFragment);
         });
     }
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

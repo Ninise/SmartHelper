@@ -1,7 +1,5 @@
 package com.ninise.smarthelper.model;
 
-import java.util.Arrays;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.RealmClass;
@@ -19,7 +17,11 @@ public class UserCaptureModel extends RealmObject {
     private String appName;
 
     @Required
+    private String packag;
+
+    @Required
     private byte[] imgVector;
+    private String mPathToFile;
 
     public String getAppName() {
         return appName;
@@ -37,12 +39,28 @@ public class UserCaptureModel extends RealmObject {
         this.imgVector = imgVector;
     }
 
+    public String getPackag() {
+        return packag;
+    }
+
+    public void setPackag(String packag) {
+        this.packag = packag;
+    }
 
     @Override
     public String toString() {
         return "UserCaptureModel{" +
                 "appName='" + appName + '\'' +
-                ", imgVector=" + Arrays.toString(imgVector) +
+                ", packag='" + packag + '\'' +
+                ", mPathToFile='" + mPathToFile + '\'' +
                 '}';
+    }
+
+    public void setPathToFile(String pathToFile) {
+        mPathToFile = pathToFile;
+    }
+
+    public String getPathToFile() {
+        return mPathToFile;
     }
 }

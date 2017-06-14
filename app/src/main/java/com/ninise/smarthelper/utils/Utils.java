@@ -80,15 +80,9 @@ public class Utils {
         }
     }
 
-    public String saveBitmapToFile(View v) throws IOException {
-        Bitmap bitmap;
+    public String saveBitmapToFile(Bitmap bitmap) throws IOException {
         String path = "";
         try {
-            v.setDrawingCacheEnabled(true);
-            v.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-            bitmap = Bitmap.createBitmap(v.getDrawingCache());
-
             String file_path = String.format(
                     Locale.US, "%s/%s",
                     Environment.getExternalStorageDirectory().getAbsolutePath(),

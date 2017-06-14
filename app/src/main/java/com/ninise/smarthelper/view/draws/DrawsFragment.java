@@ -19,7 +19,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 
 /**
  * @author Nikita <nikita.nikitin@computoolsglobal.com>
@@ -38,7 +37,6 @@ public class DrawsFragment extends BaseFragment {
         DrawsFragment fragment = new DrawsFragment();
         return fragment;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ninise.smarthelper.R2;
 import com.ninise.smarthelper.core.CoreProcessor;
 import com.ninise.smarthelper.model.UserCaptureModel;
@@ -40,23 +41,18 @@ public class DrawsRecyclerViewHolder extends BaseViewHolder<UserCaptureModel> {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void bind(UserCaptureModel userCaptureModel, int position, IRecyclerItemClickListener<UserCaptureModel> listener) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-//        Bitmap bmp = null;
         try {
             int [] vector = processor.toIntArray(userCaptureModel.getImgVector());
             int[][] matrix = processor.convert1Dto2D(vector, processor.getCompressValue());
             System.out.println("ELEMENT - " + userCaptureModel.getAppName());
             Utils.getInstance().printMatrix(matrix);
 
-//            bmp = Bitmap.createBitmap(vector, 128, 128, Bitmap.Config.ARGB_8888);
         } catch (IOException e) {
             e.printStackTrace();
         }
-//
-//        Bitmap scale = Bitmap.createScaledBitmap(bmp, 128 * 4, 128 * 4, true);
-//
-//        mImageView.setImageBitmap(scale);
+        Bitmap scale = BitmapFactory.decodeFile(userCaptureModel.getPathToFile());
+
+        mImageView.setImageBitmap(scale);
 
         mTextView.setText(userCaptureModel.getAppName());
         mView.setOnClickListener(v -> listener.onClick(userCaptureModel, position));

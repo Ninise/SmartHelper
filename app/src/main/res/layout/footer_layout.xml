@@ -10,21 +10,21 @@
 
     <include
         android:id="@+id/layout_panic"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         layout="@layout/footer_item_layout"
         android:layout_weight="1" />
 
     <include
         android:id="@+id/layout_action"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         layout="@layout/footer_item_layout"
         android:layout_weight="1" />
 
     <include
         android:id="@+id/layout_lock"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         layout="@layout/footer_item_layout"
         android:layout_weight="1" />

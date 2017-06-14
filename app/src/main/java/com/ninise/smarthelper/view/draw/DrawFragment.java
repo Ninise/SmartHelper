@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,7 +68,7 @@ public class DrawFragment extends BaseFragment {
 
         ButterKnife.bind(this, view);
 
-        tuneToolbar(mToolbar, 0, R.string.app_name, null);
+        tuneToolbar(mToolbar, R.drawable.ic_spy, R.string.app_name, null);
         tuneBottomBar(mBottomBarView);
 
         addView();
@@ -123,6 +122,9 @@ public class DrawFragment extends BaseFragment {
         bottomBarView.setFirstText(R.string.apps);
         bottomBarView.setSecondText(R.string.save);
         bottomBarView.setThirdText(R.string.draws);
+        bottomBarView.setFirstImage(R.drawable.ic_app);
+        bottomBarView.setSecondImage(R.drawable.ic_floppy_disk);
+        bottomBarView.setThirdImage(R.drawable.ic_learning);
 
         bottomBarView.setOnFirstClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_APPS));
         bottomBarView.setSecondClickListener(v -> mListener.onActionListener(MainActivity.IDrawListener.DRAW_SAVE));
